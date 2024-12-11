@@ -5,6 +5,19 @@ const botonDescansoLargo = document.querySelector('.app__card-button--largo');
 const banner = document.querySelector('.app__image');
 const titulo = document.querySelector('.app__title');
 const botones = document.querySelectorAll('.app__card-button');
+const inputEnfoqueMusica = document.querySelector('#alternar-musica');
+const musica = new Audio('./sonidos/luna-rise-part-one.mp3')
+
+
+inputEnfoqueMusica.addEventListener('change', ()=>{
+    if(musica.paused){
+        musica.play();
+    }else{
+        musica.pause();
+    }
+})
+
+musica.loop = true; 
 
 botonDescansoCorto.addEventListener('click', () =>{
     cambiarContexto ('descanso-corto');
@@ -20,7 +33,6 @@ botonDescansoLargo.addEventListener('click', () =>{
     cambiarContexto ('descanso-largo');
     botonDescansoLargo.classList.add('active');
 })
-
 
 function cambiarContexto(contexto) {
 
