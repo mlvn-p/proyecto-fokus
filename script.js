@@ -6,7 +6,17 @@ const banner = document.querySelector('.app__image');
 const titulo = document.querySelector('.app__title');
 const botones = document.querySelectorAll('.app__card-button');
 const inputEnfoqueMusica = document.querySelector('#alternar-musica');
-const musica = new Audio('./sonidos/luna-rise-part-one.mp3')
+const musica = new Audio('./sonidos/luna-rise-part-one.mp3');
+const botonComenzarPausar = document.querySelector('#start-pause');
+const audioPlay = new Audio('./sonidos/play.wav');
+const audioPausa = new Audio('./sonidos/pause.mp3');
+const audioTiempoFinalizado = new Audio('./sonidos/beep.mp3');
+const textoComenzarPausar = document.querySelector('#start-pause span');
+const iconoComenzarPausar = document.querySelector('#icono-comenzar-pausar');
+const tiempoEnPantalla = document.querySelector('#timer');
+
+let tiempoTranscurridoEnSegundos = 1500;
+let idIntervalo = null;
 
 
 inputEnfoqueMusica.addEventListener('change', ()=>{
@@ -20,22 +30,26 @@ inputEnfoqueMusica.addEventListener('change', ()=>{
 musica.loop = true; 
 
 botonDescansoCorto.addEventListener('click', () =>{
+    tiempoTranscurridoEnSegundos = 300;
     cambiarContexto ('descanso-corto');
     botonDescansoCorto.classList.add('active');
 })
 
 botonEnfoque.addEventListener('click', () =>{
+    tiempoTranscurridoEnSegundos = 1500;
     cambiarContexto ('enfoque'); 
     botonEnfoque.classList.add('active');
 })
 
 botonDescansoLargo.addEventListener('click', () =>{
+    tiempoTranscurridoEnSegundos = 900;
     cambiarContexto ('descanso-largo');
     botonDescansoLargo.classList.add('active');
 })
 
 function cambiarContexto(contexto) {
 
+    mostrarTiempo();
     botones.forEach(function(contexto){
         contexto.classList.remove('active');
     })
@@ -63,3 +77,43 @@ function cambiarContexto(contexto) {
             break;
     }
 }
+
+const cuentaRegresiva = () => {
+    if(tiempoTranscurridoEnSegundos <= 0){
+        audioTiempoFinalizado .play()
+        alert('Finalizó el tiempo');
+        reiniciar();
+        return;
+    }
+    textoComenzarPausar.textContent = "Pausar";
+    iconoComenzarPausar.src= 'imagenes/pause.png';
+    tiempoTranscurridoEnSegundos -= 1;
+    mostrarTiempo();
+}
+
+botonComenzarPausar.addEventListener('click', comenzarPausar);
+
+function comenzarPausar (){
+    if(idIntervalo){
+        audioPausa.play();
+        reiniciar()
+        return
+    }
+    audioPlay.play();
+    idIntervalo = setInterval(cuentaRegresiva,1000)
+}
+
+function reiniciar(){
+    clearInterval(idIntervalo);
+    idIntervalo = null;
+    textoComenzarPausar.textContent = "Comenzar";
+    iconoComenzarPausar.src = 'imagenes/play_arrow.png';
+}
+
+function mostrarTiempo(){
+    const tiempo = new Date(tiempoTranscurridoEnSegundos * 1000);
+    const tiempoFormateado = tiempo.toLocaleTimeString('es-AR',{minute:'2-digit', second:'2-digit'});
+    tiempoEnPantalla.innerHTML = `${tiempoFormateado}`;
+}
+
+mostrarTiempo();
